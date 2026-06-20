@@ -161,18 +161,19 @@
   .hotspot::after{
     content:"";position:absolute;inset:-6%;border-radius:14px;pointer-events:none;
     box-shadow:0 0 0 0 rgba(243,201,105,0);
-    animation:beacon 4.5s ease-in-out infinite;
   }
+  /* neutral until the toast — then the other tappable spots gently come to life */
+  .card.toasted .hotspot::after{animation:beacon 4.2s ease-in-out infinite}
   .hotspot:hover::after,.hotspot:focus-visible::after{
-    box-shadow:0 0 30px 8px rgba(243,201,105,0.42);animation:none;
+    box-shadow:0 0 32px 9px rgba(243,201,105,0.46);animation:none;
   }
   .hotspot:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
   .hotspot:active{transform:scale(0.97)}
   @keyframes beacon{
     0%,100%{box-shadow:0 0 0 0 rgba(243,201,105,0)}
-    50%{box-shadow:0 0 22px 6px rgba(243,201,105,0.26)}
+    50%{box-shadow:0 0 26px 7px rgba(243,201,105,0.34)}
   }
-  #hsBook{left:38%;top:70%;width:18%;height:12%}
+  #hsBook{left:38%;top:69%;width:27%;height:13%}
   #hsCard{left:6%;top:59%;width:17%;height:13%}
 
   /* the reveal panel that lifts the words off the page */
@@ -198,25 +199,27 @@
   .reveal-title{font-size:clamp(15px,3.4vw,19px);letter-spacing:.02em;opacity:.7;margin-bottom:12px;font-style:italic}
   .reveal-body{font-size:clamp(20px,5.6vw,30px);font-weight:600}
   .reveal-body span{display:block;margin:.18em 0}
+  .reveal-tail{margin-top:.6em;font-size:clamp(17px,4.4vw,23px);font-style:italic;font-weight:600;color:#5a2a16}
   .reveal-close{margin-top:16px;font-size:13px;opacity:.55;font-family:system-ui,sans-serif}
 
   /* drifting steam from the coffee */
-  .steam{position:absolute;left:8%;top:66%;width:16%;height:16%;z-index:2;pointer-events:none}
+  .steam{position:absolute;left:7%;top:60%;width:18%;height:22%;z-index:2;pointer-events:none}
   .steam i{
-    position:absolute;bottom:0;width:10px;height:60%;
-    background:linear-gradient(to top, rgba(255,255,255,0), rgba(255,255,255,0.5) 40%, rgba(255,255,255,0));
+    position:absolute;bottom:0;width:14px;height:64%;
+    background:linear-gradient(to top, rgba(255,255,255,0), rgba(255,255,255,0.72) 42%, rgba(255,255,255,0));
     border-radius:50%;filter:blur(5px);opacity:0;
     transform:translateX(-50%);
     animation:steam ease-in-out infinite;
   }
-  .steam i:nth-child(1){left:42%;animation-duration:6s;animation-delay:0s}
-  .steam i:nth-child(2){left:54%;animation-duration:7s;animation-delay:1.6s}
-  .steam i:nth-child(3){left:48%;animation-duration:6.5s;animation-delay:3.1s}
+  .steam i:nth-child(1){left:40%;animation-duration:5.5s;animation-delay:0s}
+  .steam i:nth-child(2){left:52%;animation-duration:6.5s;animation-delay:1.2s}
+  .steam i:nth-child(3){left:46%;animation-duration:6s;animation-delay:2.6s}
+  .steam i:nth-child(4){left:58%;animation-duration:7s;animation-delay:3.6s}
   @keyframes steam{
     0%{opacity:0;transform:translate(-50%,0) scaleX(1) scaleY(.6)}
-    18%{opacity:.5}
-    60%{opacity:.3}
-    100%{opacity:0;transform:translate(-50%,-120%) translateX(8px) scaleX(1.7) scaleY(1.2)}
+    15%{opacity:.85}
+    55%{opacity:.5}
+    100%{opacity:0;transform:translate(-50%,-135%) translateX(14px) scaleX(1.9) scaleY(1.3)}
   }
 
   @media (prefers-reduced-motion:reduce){
@@ -238,7 +241,7 @@
     <div class="flash" id="flash" aria-hidden="true"></div>
     <button class="toast-zone" id="toastZone" aria-label="Skål for deg i dag, kjære løven min — trykk for å skåle i rosé"></button>
     <div class="tap-hint" id="tapHint" aria-hidden="true">🥂 Trykk for å skåle</div>
-    <div class="steam" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="steam" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
     <button class="hotspot" id="hsBook" aria-label="Åpne ordene i boka"></button>
     <button class="hotspot" id="hsCard" aria-label="Åpne kortet: De små øyeblikkene er de store minnene"></button>
     <div class="reveal" id="reveal" aria-hidden="true">
@@ -340,7 +343,7 @@
     spawnHearts(14);
     flash.classList.remove('go'); void flash.offsetWidth; flash.classList.add('go');
     if (navigator.vibrate) navigator.vibrate([8, 40, 14]);
-    if (!toasted){ toasted = true; hint.classList.add('gone'); }
+    if (!toasted){ toasted = true; hint.classList.add('gone'); document.querySelector('.card').classList.add('toasted'); }
   }
   btn.addEventListener('click', toast);
 
@@ -348,14 +351,14 @@
   const reveal = document.getElementById('reveal');
   const revealPanel = document.getElementById('revealPanel');
   const notes = {
-    hsBook: { title:'I vår lille bok står det:', body:['Ideer','Drømmer','Planer','Latter','Kreativitet ♡'] },
-    hsCard: { title:'', body:['De små øyeblikkene','er de store minnene ♡'] }
+    hsBook: { body:['Ideer','Drømmer','Planer','Latter','Kreativitet'], tail:'Vi skaper historien vår ♡' },
+    hsCard: { body:['De små øyeblikkene','er de store minnene ♡'] }
   };
   function openNote(key){
     const n = notes[key]; if(!n) return;
     revealPanel.innerHTML =
-      (n.title ? '<div class="reveal-title">'+n.title+'</div>' : '') +
       '<div class="reveal-body">'+ n.body.map(l=>'<span>'+l+'</span>').join('') +'</div>' +
+      (n.tail ? '<div class="reveal-tail">'+n.tail+'</div>' : '') +
       '<div class="reveal-close">Trykk for å lukke</div>';
     reveal.classList.add('open');
   }
